@@ -6,7 +6,7 @@ class PizzaRunner {
 
     @Karate.Test
     Karate testAll() {
-        return Karate.run("pizza").relativeTo(getClass());
+        return Karate.run("classpath:api");
     }
 
 }

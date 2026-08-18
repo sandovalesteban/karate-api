@@ -6,8 +6,7 @@ class PizzaSmokeRunner {
 
     @Karate.Test
     Karate testSmoke() {
-        return Karate.run("pizza")
-                .tags("@smoke")
-                .relativeTo(getClass());
+        return Karate.run("classpath:api")
+                .tags("@smoke");
     }
 }
