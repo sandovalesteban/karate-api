@@ -94,35 +94,15 @@ jobs:
       - name: Prepare Karate report for GitHub Pages
         if: always()
         run: |
-
           mkdir -p pages
 
           if [ -f target/karate-reports/karate-summary.html ]; then
-
             cp -r target/karate-reports/* pages/
-
-            # Make Karate summary the GitHub Pages home page
             cp target/karate-reports/karate-summary.html pages/index.html
-
             echo "Karate report prepared successfully"
-
           else
-
             echo "Karate report not found"
-
-            cat > pages/index.html <<'EOF'
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>Karate Test Report</title>
-            </head>
-            <body>
-              <h1>Karate Test Report</h1>
-              <p>No Karate report was generated.</p>
-            </body>
-            </html>
-            EOF
-
+            echo '<html><body><h1>Karate Report</h1><p>No report was generated.</p></body></html>' > pages/index.html
           fi
 
       # -----------------------------------------
