@@ -9,8 +9,8 @@ class PizzaRunner {
         return Karate.run("pizza").relativeTo(getClass());
     }
 
-    @Karate.Test
-    Karate testSmoke() {
-        return Karate.run("pizza").tags("@smoke").relativeTo(getClass());
-    }
+//    @Karate.Test
+//    Karate testSmoke() {
+//        return Karate.run("pizza").tags("@smoke").relativeTo(getClass());
+//    }
 }
