@@ -32,16 +32,29 @@ on:
           - smoke
           - full
 
+# Permisos necesarios para publicar GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
+
   karate-tests:
 
     runs-on: ubuntu-latest
 
     steps:
 
+      # -----------------------------------------
+      # Checkout
+      # -----------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # -----------------------------------------
+      # Java
+      # -----------------------------------------
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -49,6 +62,9 @@ jobs:
           java-version: "17"
           cache: maven
 
+      # -----------------------------------------
+      # Run Karate
+      # -----------------------------------------
       - name: Run Karate tests
         run: |
           if [ "${{ github.event.inputs.test_suite }}" = "smoke" ]; then
@@ -61,6 +77,9 @@ jobs:
               -Dkarate.env=${{ github.event.inputs.environment || 'qa' }}
           fi
 
+      # -----------------------------------------
+      # Upload Karate report as Artifact
+      # -----------------------------------------
       - name: Upload Karate reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,3 +87,58 @@ jobs:
           name: karate-report
           path: target/karate-reports/
           retention-days: 14
+
+      # -----------------------------------------
+      # Prepare report for GitHub Pages
+      # -----------------------------------------
+      - name: Prepare Karate report for GitHub Pages
+        if: always()
+        run: |
+
+          mkdir -p pages
+
+          if [ -f target/karate-reports/karate-summary.html ]; then
+
+            cp -r target/karate-reports/* pages/
+
+            echo "Karate report prepared successfully"
+
+          else
+
+            echo "Karate report not found"
+
+            echo "<html><body><h1>Karate Report</h1><p>Report was not generated.</p></body></html>" > pages/index.html
+
+          fi
+
+      # -----------------------------------------
+      # Upload Pages artifact
+      # -----------------------------------------
+      - name: Upload Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
+
+
+  # =========================================
+  # Deploy GitHub Pages
+  # =========================================
+
+  deploy:
+
+    needs: karate-tests
+
+    if: always()
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
