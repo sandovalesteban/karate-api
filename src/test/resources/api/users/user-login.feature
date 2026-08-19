@@ -17,8 +17,8 @@ Feature: User authentication API
     And request
     """
     {
-      "username": "user.result.username",
-      "password": "user.result.password"
+      "username": "default",
+      "password": "12345678"
     }
     """
     * print 'LOGIN REQUEST:', user
